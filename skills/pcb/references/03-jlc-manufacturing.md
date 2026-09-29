@@ -140,7 +140,17 @@ it was left as the user's call.
 > `免费打样已全部切换为OSP工艺` and `OSP无任何表面处理费用`
 > — `www.jlc.com/portal/t7i37578.html`, article dated 2026-08-24
 
-**Free ENIG (沉金) also exists**, and this is the lever most people miss. VERIFIED, verbatim, from
+**6-layer boards: the free channel is OSP only since 2026-05-29.** VERIFIED 2026-09-29, verbatim from
+`www.jlc.com/portal/q7i61353.html` (dated 2026-05-29):
+
+> `后续6层板免费打样通道，仅支持OSP表面处理，不再受理沉金工艺订单`
+
+The coupon-use page `server_guide_37576.html` (updated 2026-09-15) still lists 沉金 among the 6-layer
+coupon conditions, and `q33i62511.html` (2026-08-07) says `沉金打样券：继续保留` without saying it covers
+6 layers. Rule for an order: pick the finish the coupon's own title names, and pay only if the total
+reads ¥0.00. (ARK CARD round-2 audit, 2026-09-29: its package had specified 沉金 on the 6-layer coupon.)
+
+**Free ENIG (沉金) also exists for 2–4 layers** (the 2024 notice below also said 6), and this is the lever most people miss. VERIFIED, verbatim, from
 `www.jlc.com/portal/q7i42818.html` (dated 2024-03-05) and confirmed still live on the claim page in
 2026:
 

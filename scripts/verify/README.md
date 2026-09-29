@@ -166,9 +166,13 @@ is one drilled feature, not two holes.
   board it never read. It does **not** model polarity (`%LPC` is accepted and ignored, so
   a clear-polarity cut-out would read as solid), step-and-repeat, or aperture-macro
   primitives other than the outline (code 4). Non-metric files are refused, not scaled.
-  The `RoundRect` reading — four **outer** corners, `r` a **diameter** — was settled
-  empirically: on a 0.500 mm-pitch connector it makes the pad 0.300 mm wide and the copper
-  web 0.200 mm, and the EDA's own DRC reported 0.1996 mm. Two routes, one number.
+  `RoundRect` follows the macro EasyEDA writes into the file: a circle of diameter `r`
+  centred on each of the four points, width-`r` lines between them and the outline through
+  them, so the pad is the point rectangle grown by `r/2` (outer size `2*max|x| + r`). An
+  earlier note read the points as outer corners and matched that to the EDA's DRC value;
+  the DRC describes the design pads, not what the fab renders, so it proved nothing. The
+  outer size is exact only for axis-aligned instances; a rotated RoundRect gets a bounding
+  box.
 * **`raster.py`** — **resolution is a ceiling on truth.** At 10 µm a 5 µm sliver is
   invisible and two regions 5 µm apart may merge. Any conclusion tighter than one pixel
   must be re-measured exactly. A label is copper, not a net.
