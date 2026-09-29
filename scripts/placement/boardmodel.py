@@ -77,7 +77,7 @@ DEFAULT_LAYERS = {
     "silkscreen": [3, 4],
     "multi": 12,                 # through-hole / NPTH feature layer
     "board_outline": 11,
-    "mirror_axis": "x",
+    "mirror_axis": "y",          # measured on EasyEDA Pro exports, see geom2d.mirror_point
 }
 
 
@@ -145,7 +145,7 @@ class Board(object):
     # ------------------------------------------------------------------ placement
     def _local_to_board(self, lx, ly, part_x, part_y, angle, side):
         if side == "bottom":
-            lx, ly = G.mirror_point(lx, ly, self.layers.get("mirror_axis", "x"))
+            lx, ly = G.mirror_point(lx, ly, self.layers.get("mirror_axis", "y"))
         dx, dy = G.rot(lx, ly, angle)
         return (part_x + dx, part_y + dy)
 
