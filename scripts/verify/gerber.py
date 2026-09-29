@@ -34,14 +34,20 @@ WHAT IT CANNOT SEE
       and X2 attributes beyond being tolerated.
     * Whether the file is the one that was ordered.  Hash the package.
 
-A SETTLED AMBIGUITY: RoundRect
-    %ADDnnRoundRect,r X x1 X y1 X x2 X y2*%
-    The four (+-x, +-y) pairs are the pad's OUTER corners and `r` is the corner-rounding
-    DIAMETER.  This was settled empirically, not assumed: on the reference board a
-    30-finger connector on 0.500 mm pitch has r=0.1016, x=+-0.15, y=+-0.570001, which
-    makes the pad 0.300 mm wide and the copper web 0.200 mm -- and 0.1996 mm is exactly
-    what the EDA's own DRC reported as that board's pad-to-pad minimum.  Two independent
-    routes to the same number is what "settled" means here.
+RoundRect (corrected 2026-09-29, ARK CARD round-2 audit)
+    %ADDnnRoundRect,r X x1 X y1 X x2 X y2 ...*%  with EasyEDA's macro
+    %AMRoundRect*1,1,$1,$2,$3*...*20,1,$1,$2,$3,$4,$5,0*...*4,1,4,$2,$3,...*%
+    The macro flashes a circle of diameter $1 CENTRED on each (x, y) point, width-$1 lines
+    between the points and the outline through them: the pad is the point rectangle grown
+    by $1/2 on every side.  So the outer size is 2*max|x| + r by 2*max|y| + r, and the
+    corner radius is r/2.  Evidence on the ARK CARD R2 package (EasyEDA Pro): in the solder
+    mask, round pads C1.7 -> C1.8016 and obrounds O1.0x2.0 -> O1.1016x2.1016 (+0.0508 per
+    side), and a 0.8 x 0.9 copper rectangle's mask RoundRect has points +-0.4 / +-0.45 with
+    r = 0.1016 -- the same +0.0508 per side only under this reading.  The earlier note read
+    the points as OUTER corners and "validated" it against the EDA's DRC pad-to-pad value;
+    that DRC number describes the design pads, not what the fab renders from the macro, so
+    it could not settle the question.  A board whose COPPER uses RoundRect has pads r wider
+    and webs r narrower than a points-as-corners reading suggests.
 
 HOW IT WAS VALIDATED
     Against a released board's shipped package: the outline read 41.400 x 100.000 mm to
@@ -344,9 +350,10 @@ def _make_aperture(num, kind, args, macros, raw):
     if kind == "O":
         return Aperture(num, "O", f(0), f(1), raw=raw)
     if kind == "RoundRect":
-        # see the module docstring: the four points are OUTER corners, r is a DIAMETER
-        return Aperture(num, "RR", 2 * max(abs(f(1)), abs(f(3))),
-                        2 * max(abs(f(2)), abs(f(4))), r=f(0), raw=raw)
+        # see the module docstring: circles of diameter r centred on the points, so the pad
+        # is the point rectangle grown by r/2 per side (corrected 2026-09-29)
+        return Aperture(num, "RR", 2 * max(abs(f(1)), abs(f(3))) + f(0),
+                        2 * max(abs(f(2)), abs(f(4))) + f(0), r=f(0), raw=raw)
     if kind in macros:
         verts = _macro_outline(macros[kind])
         xs = [p[0] for p in verts] or [0.0]
@@ -512,12 +519,11 @@ def _selftest():
     ok &= good
 
     rr = lay.apertures[13]
-    good = abs(rr.w - 0.300) < 1e-9 and abs(rr.h - 1.140002) < 1e-6 and abs(rr.r - 0.1016) < 1e-9
+    good = abs(rr.w - 0.4016) < 1e-9 and abs(rr.h - 1.241602) < 1e-6 and abs(rr.r - 0.1016) < 1e-9
     print("  RoundRect -> %.4f x %.4f, r(dia) %.4f   %s"
           % (rr.w, rr.h, rr.r, "OK" if good else "FAIL"))
     ok &= good
-    print("     (the reference case: 0.500 mm pitch - 0.300 mm pad = 0.200 mm web,")
-    print("      and the EDA's own DRC reported 0.1996 mm.  Two routes, one number.)")
+    print("     (points +-0.15 / +-0.570001 are circle centres: the pad is 0.300 + r wide)")
 
     ob = lay.apertures[12]
     good = abs(ob.area() - ((1.4 - 0.8) * 0.8 + math.pi * 0.16)) < 1e-9
