@@ -66,7 +66,7 @@ sibling of `import_easyeda.py` and nothing else.
               "min_courtyard_gap": 0.0 },
   "layers": { "copper": [1,15,16,2], "top": 1, "bottom": 2,
               "solid_planes": [15], "assembly_outline": 48, "silkscreen": [3,4],
-              "multi": 12, "board_outline": 11, "mirror_axis": "x" },
+              "multi": 12, "board_outline": 11, "mirror_axis": "y" },
   "outline": { "polygon": [[0,0],[41.4,0],[41.4,100],[0,100]] },
   "footprints": { "<id>": { "name": "...", "outline": [[x,y],…], "silk": null,
                             "pads": [ { "num":"1", "elem":"e1", "x":0, "y":0,
@@ -163,11 +163,13 @@ includes vias, pad holes and NPTH alike.
   empty hole dict; counting them added 88 phantom drills to the census.
 * **Stored units are mil**, in both export dialects, *including inside footprint
   documents whose canvas record claims mm*. Converted once, in the adapter.
-* **Bottom-side mirroring is ambiguous in the source material** — two measured board
-  models negate X, one placement helper negates Y. X is the one exercised against real
-  bottom-side data. It is `layers.mirror_axis`, a config key, so you can re-measure it
-  rather than inherit a guess. Get it wrong and every bottom part is 180° out, which
-  looks plausible on a symmetric footprint.
+* **Bottom-side mirroring is Y for EasyEDA Pro** (`layers.mirror_axis = "y"`, the
+  default since 2026-09-28). Measured on a 6-layer board with 64 bottom-side parts:
+  "x" gave 223 false overlaps and 48 false split nets, "y" matched EasyEDA's DRC; the
+  same answer as `references/02-review.md` §2d. Older reference board models negated X,
+  so it stays a config key — re-measure on an asymmetric bottom part if an export
+  disagrees. Get it wrong and every bottom part is 180° out, which looks plausible on a
+  symmetric footprint.
 * **A multi-primitive assembly outline is reduced to its bounding box** by the adapter.
   Conservative for containment (a false overlap, never a false clearance) and wrong if
   you need the real notch — for that, use the 3D solid.

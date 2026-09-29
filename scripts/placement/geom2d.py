@@ -62,13 +62,16 @@ def rot(x, y, deg):
 def mirror_point(x, y, axis="x"):
     """Mirror a footprint-local point for a bottom-side placement.
 
-    BLIND SPOT / KNOWN AMBIGUITY: the reference project contains BOTH conventions in
-    different files -- two measured board models negate X, one placement helper negates
-    Y.  The X-negating form is the one that was exercised against real bottom-side data;
-    the Y form was written for a board on which every part was top-side and so was never
-    tested.  `boardmodel` exposes this as a config key (`layers.mirror_axis`) precisely
-    so it can be re-measured rather than assumed.  Get it wrong and every bottom-side
-    part is 180 degrees out, which looks plausible on a symmetric footprint.
+    MEASURED: EasyEDA Pro mirrors a bottom-side part in Y (negate y, then rotate).
+    ARK CARD R1, 2026-09-28 (6 layers, 64 bottom-side parts, EasyEDA Pro 3.2 .epro
+    export): with "x" route_accept reported 223 different-net overlaps (every one on a
+    bottom part, all -0.25 mm) and 48 split nets; with "y" 145/146 nets whole and the
+    clearance gate passed, matching EasyEDA's own DRC. This agrees with references
+    02-review.md section 2d and 05-easyeda-mcp.md T9. The reference project's older
+    board models negated X; if an export ever disagrees, re-measure on an ASYMMETRIC
+    bottom part -- `layers.mirror_axis` stays a config key for exactly that. Get it
+    wrong and every bottom-side part is 180 degrees out, which looks plausible on a
+    symmetric footprint.
     """
     if axis == "x":
         return (-x, y)

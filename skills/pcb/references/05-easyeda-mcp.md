@@ -164,7 +164,10 @@ and rotated counter-clockwise**. Mirror-Y-then-CCW is algebraically identical to
 
 **Guard.** Calibrate any transform against a rotated top-side part *and* an asymmetric bottom-side
 part. See `02-review.md` §2d for the sibling failure: a mirror implemented on the wrong axis, which
-survived review because 148 of 152 pads were symmetric two-terminal chips.
+survived review because 148 of 152 pads were symmetric two-terminal chips. The toolkit's own
+`boardmodel` defaulted to the X mirror until 2026-09-28; on a 6-layer board with 64 bottom-side parts
+that default made `route_accept` report 223 false overlaps and 48 false split nets. The default is now
+`"y"`.
 
 ### T10 — `pcb_modify_primitive` on a via rewrites dimensions you did not ask about
 
